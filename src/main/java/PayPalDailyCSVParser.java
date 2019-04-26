@@ -34,7 +34,14 @@ public class PayPalDailyCSVParser {
             }
             CustomerRecord customerRecord = emailToCustomerRecordMap.get(from);
             if (customerRecord == null) {
-                customerRecord = new CustomerRecord(csvRecord.get("Name"), from, csvRecord.get("Shipping Address"));
+                customerRecord = new CustomerRecord(csvRecord.get("Name"),
+                        from,
+                        csvRecord.get("Shipping Address"),
+                        csvRecord.get("Address Line 1") + csvRecord.get("Address Line 2/District/Neighborhood"),
+                        csvRecord.get("Town/City"),
+                        csvRecord.get("State/Province/Region/County/Territory/Prefecture/Republic"),
+                        csvRecord.get("Zip/Postal Code"),
+                        csvRecord.get("Country"));
                 emailToCustomerRecordMap.put(from, customerRecord);
             }
             String[] monthDateYear = csvRecord.get(0).split("/");
@@ -45,7 +52,11 @@ public class PayPalDailyCSVParser {
                             .withYear(Integer.parseInt(monthDateYear[2]))
                             .withMonthOfYear(Integer.parseInt(monthDateYear[0]))
                             .withDayOfMonth(Integer.parseInt(monthDateYear[1])),
-                    csvRecord.get("Item Title"));
+                    csvRecord.get("Item Title"),
+                    csvRecord.get("Item ID"),
+                    Integer.parseInt(csvRecord.get("Quantity")),
+                    csvRecord.get("Transaction ID")
+            );
         }
 
         System.out.println(emailToCustomerRecordMap.size());
