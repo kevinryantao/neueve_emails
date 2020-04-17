@@ -30,7 +30,7 @@ public class CustomerRecord {
 
     int checkoutCount = 0;
     int cartItemCount = 0;
-    boolean isSubsctiber = false;
+    boolean isSubscriber = false;
     DateTime subscribeStartDate = null;
 
     int silkCount;
@@ -46,7 +46,53 @@ public class CustomerRecord {
     DateTime firstPurchase = null;
     DateTime lastPurchase = null;
 
+    public CustomerRecord(String email,
+                          String firstName,
+                          String lastName,
+                          String street,
+                          String zip,
+                          String city,
+                          String state,
+                          String country,
+                          int checkoutCount,
+                          int cartItemCount,
+                          boolean isSubscriber,
+                          DateTime subscribeStartDate,
+                          int silkCount,
+                          int silverCount,
+                          int goldCount,
+                          int bvCount,
+                          int creamCount,
+                          int applicatorCount,
+                          int assortedCount,
+                          String lastTransactionId,
+                          DateTime firstPurchase,
+                          DateTime lastPurchase) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.street = street;
+        this.zip = zip;
+        this.city = city;
+        this.state = state;
+        this.country = country;
+        this.checkoutCount = checkoutCount;
+        this.cartItemCount = cartItemCount;
+        this.isSubscriber = isSubscriber;
+        this.subscribeStartDate = subscribeStartDate;
+        this.silkCount = silkCount;
+        this.silverCount = silverCount;
+        this.goldCount = goldCount;
+        this.bvCount = bvCount;
+        this.creamCount = creamCount;
+        this.applicatorCount = applicatorCount;
+        this.assortedCount = assortedCount;
+        this.lastTransactionId = lastTransactionId;
+        this.firstPurchase = firstPurchase;
+        this.lastPurchase = lastPurchase;
+    }
 
+    // constructor for creating a CustomerRecord from PayPal
     public CustomerRecord(String name,
                           String email,
                           String address,
@@ -99,7 +145,7 @@ public class CustomerRecord {
 
     public void addPurchase(double gross, String type, DateTime purchaseDate, String itemTitle, String itemId, int quantity, String transactionId) {
         if (type.equals("Subscription Payment")) {
-            isSubsctiber = true;
+            isSubscriber = true;
             if(subscribeStartDate == null || subscribeStartDate.isAfter(purchaseDate)){
                 subscribeStartDate = purchaseDate;
             }
@@ -164,6 +210,9 @@ public class CustomerRecord {
         if(itemId.equals("gold x 4")){
             this.goldCount += 4 * realQuantity;
         }
+        if(itemId.equals("bv-clearing-kit x 4")){
+            this.bvCount += 4 * realQuantity;
+        }
 
         if(itemId.contains("x 4")){
             this.cartItemCount += 4 * realQuantity;
@@ -172,9 +221,35 @@ public class CustomerRecord {
         }
     }
 
+    // this customerRecord is the old one, otherCustomerRecord is the new one
+    public void mergeWithOtherCustomerRecord(CustomerRecord otherCustomerRecord) {
+        if(!this.email.equals(otherCustomerRecord.email)){
+            return;
+        }
+
+        this.checkoutCount += otherCustomerRecord.checkoutCount;
+        this.cartItemCount += otherCustomerRecord.cartItemCount;
+        this.isSubscriber = this.isSubscriber || otherCustomerRecord.isSubscriber;
+        if (otherCustomerRecord.isSubscriber){
+            if(this.subscribeStartDate == null || this.subscribeStartDate.isAfter(otherCustomerRecord.subscribeStartDate)) {
+                this.subscribeStartDate = otherCustomerRecord.subscribeStartDate;
+            }
+        }
+        this.silkCount += otherCustomerRecord.silkCount;
+        this.silverCount += otherCustomerRecord.silverCount;
+        this.goldCount += otherCustomerRecord.goldCount;
+        this.bvCount += otherCustomerRecord.bvCount;
+        this.creamCount += otherCustomerRecord.creamCount;
+        this.applicatorCount += otherCustomerRecord.applicatorCount;
+        this.assortedCount += otherCustomerRecord.assortedCount;
+
+        this.lastTransactionId = otherCustomerRecord.lastTransactionId;
+        this.lastPurchase = otherCustomerRecord.lastPurchase;
+    }
+
     public String toString() {
 
-        int subscriber = isSubsctiber ? 1 : 0;
+        int subscriber = isSubscriber ? 1 : 0;
 
         String subscribeStartString = "";
 

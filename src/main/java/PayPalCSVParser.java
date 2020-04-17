@@ -17,19 +17,21 @@ import java.util.Set;
 
 import static java.nio.charset.StandardCharsets.*;
 
+// This produces something that can be imported into Mailwizz
+
 public class PayPalCSVParser {
 
 
     public static void main(String[] args) throws IOException {
 
-        File source = new File("Last6MoToApril252019.CSV");
+        File source = new File("Jan172020toApril1.CSV");
 
         CSVParser parser = CSVParser.parse(source, US_ASCII, CSVFormat.EXCEL.withHeader());
 
         System.out.println(parser.getHeaderMap());
         HashMap<String, CustomerRecord> emailToCustomerRecordMap = new HashMap<String, CustomerRecord>();
 
-        PrintWriter writer = new PrintWriter("CustomerDataCleanApr25.csv", "UTF-8");
+        PrintWriter writer = new PrintWriter("CustomerDataCleanApr2_2020.csv", "UTF-8");
 
         for (CSVRecord csvRecord : parser) {
             String from = csvRecord.get("From Email Address").toLowerCase();
