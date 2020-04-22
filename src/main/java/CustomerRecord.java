@@ -2,7 +2,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerRecord {
 
@@ -22,11 +25,13 @@ public class CustomerRecord {
     String firstName;
     String lastName;
 
-    String street;
+    String street1;
+    String street2 = "";
     String zip;
     String city;
     String state;
     String country;
+    String phoneNumber = "";
 
     int checkoutCount = 0;
     int cartItemCount = 0;
@@ -45,6 +50,8 @@ public class CustomerRecord {
 
     DateTime firstPurchase = null;
     DateTime lastPurchase = null;
+
+    Map<String, Map<String, Integer>> txnIdToItemIdAndQuantity = new HashMap<String, Map<String, Integer>>();
 
     public CustomerRecord(String email,
                           String firstName,
@@ -71,7 +78,8 @@ public class CustomerRecord {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.street = street;
+        this.street1 = street;
+        this.street2 = "";
         this.zip = zip;
         this.city = city;
         this.state = state;
@@ -97,18 +105,22 @@ public class CustomerRecord {
                           String email,
                           String address,
                           String street,
+                          String street2,
                           String city,
                           String state,
                           String zip,
-                          String country) {
+                          String country,
+                          String phoneNumber) {
         this.name = name;
         this.email = email;
         this.address = address;
-        this.street = street;
+        this.street1 = street;
+        this.street2 = street2;
         this.city = city;
         this.state = state;
         this.zip = zip;
         this.country = country;
+        this.phoneNumber = phoneNumber;
 
         String[] addressParts = this.address.split(",");
         firstName = addressParts[0].toLowerCase().replaceAll("[^a-zA-Z ]", " ").trim();
@@ -117,6 +129,7 @@ public class CustomerRecord {
             System.out.println(name);
             System.out.println(email);
         }
+
         lastName = addressParts[1].trim();
         if (lastName.matches(".*\\d+.*") || lastName.toLowerCase().contains("box ")) {
             String[] firstNameSplit = firstName.split(" ");
@@ -143,6 +156,7 @@ public class CustomerRecord {
         cartItemCount = 0;
     }
 
+    // todo: need to check if itemTitle and itemId are blank
     public void addPurchase(double gross, String type, DateTime purchaseDate, String itemTitle, String itemId, int quantity, String transactionId) {
         if (type.equals("Subscription Payment")) {
             isSubscriber = true;
@@ -153,20 +167,21 @@ public class CustomerRecord {
             lifetimeValue += gross;
             checkoutCount++;
             lastTransactionId = transactionId;
-            addQuantity(itemId, quantity);
+            itemId = starsEdited(itemTitle, itemId);
+            addQuantity(itemId, quantity, transactionId);
         } else if (type.equals("Website Payment") || type.equals("eBay Auction Payment")) {
             numPurchases++;
             lifetimeValue += gross;
             checkoutCount++;
             lastTransactionId = transactionId;
-        } else if (type.equals("Shopping Cart Item")) {
+        } else if (type.equals("Shopping Cart Item")) { // prevents double counting of subscriptions
             if (itemTitle.contains("ubscription") || itemTitle.contains("***") || itemTitle.contains("3 inserts")){
                 return;
             }
             if (itemTitle.contains("bv") || itemTitle.contains("BV")) {
                 numBVPurchases++;
             }
-            addQuantity(itemId, quantity);
+            addQuantity(itemId, quantity, transactionId);
         }
 
         if (firstPurchase == null || firstPurchase.isAfter(purchaseDate)) {
@@ -178,16 +193,49 @@ public class CustomerRecord {
         }
     }
 
-    private void addQuantity(String itemId, int quantity) {
+    private String starsEdited(String itemTitle, String itemId) {
+        if(!itemTitle.contains("*")){
+            return itemId;
+        }
+        if(itemTitle.contains("clear") || itemTitle.contains("clear")){
+            return "bv-clearing-kit";
+        }
+        if(itemTitle.contains("silk") || itemTitle.contains("Silk")){
+            return "silk";
+        }
+        if(itemTitle.contains("silver") || itemTitle.contains("Silver")){
+            return "silver";
+        }
+        if(itemTitle.contains("gold") || itemTitle.contains("Gold")){
+            return "gold";
+        }
+        if(itemTitle.contains("cream") || itemTitle.contains("Cream")){
+            return "cream";
+        }
+        return itemId;
+    }
+
+    private void addQuantity(String itemId, int quantity, String transactionId) {
         int realQuantity = Math.max(1, quantity);
-        if(itemId.equals("silk") || itemId.equals("silk-ca")){
+        String realItemId = itemId;
+
+        Map<String, Integer> shoppingCart = txnIdToItemIdAndQuantity.get(transactionId);
+        if(shoppingCart == null){
+            shoppingCart = new HashMap<String, Integer>();
+            txnIdToItemIdAndQuantity.put(transactionId,shoppingCart);
+        }
+
+        if(itemId.equals("silk") || itemId.equals("silk-ca") || itemId.equals("1")){
             this.silkCount += realQuantity;
+            realItemId = "silk";
         }
-        if(itemId.equals("silver") || itemId.equals("silver-ca")){
+        if(itemId.equals("silver") || itemId.equals("silver-ca") || itemId.equals("2")){
             this.silverCount += realQuantity;
+            realItemId = "silver";
         }
-        if(itemId.equals("gold") || itemId.equals("gold-ca")){
+        if(itemId.equals("gold") || itemId.equals("gold-ca") || itemId.equals("3")){
             this.goldCount += realQuantity;
+            realItemId = "gold";
         }
         if(itemId.equals("cream")){
             this.creamCount += realQuantity;
@@ -203,21 +251,31 @@ public class CustomerRecord {
         }
         if(itemId.equals("silk x 4")){
             this.silkCount += 4 * realQuantity;
+            realItemId = "silk";
         }
         if(itemId.equals("silver x 4")){
             this.silverCount += 4 * realQuantity;
+            realItemId = "silver";
         }
         if(itemId.equals("gold x 4")){
             this.goldCount += 4 * realQuantity;
+            realItemId = "gold";
         }
         if(itemId.equals("bv-clearing-kit x 4")){
             this.bvCount += 4 * realQuantity;
+            realItemId = "bv-clearing-kit";
+        }
+        if(itemId.equals("cream x 4")){
+            this.creamCount += 4 * realQuantity;
+            realItemId = "cream";
         }
 
         if(itemId.contains("x 4")){
             this.cartItemCount += 4 * realQuantity;
+            shoppingCart.put(realItemId, 4 * realQuantity);
         } else {
             this.cartItemCount += realQuantity;
+            shoppingCart.put(realItemId, realQuantity);
         }
     }
 
@@ -260,8 +318,7 @@ public class CustomerRecord {
         String[] array = new String[]{email,
                 "\"" + firstName + "\"",
                 "\"" + lastName + "\"",
-
-                "\"" + street + "\"",
+                "\"" + street1 + street2 + "\"",
                 "\"" + zip + "\"",
                 "\"" + city + "\"",
                 "\"" + state + "\"",
@@ -288,4 +345,154 @@ public class CustomerRecord {
 
     }
 
+    public boolean isEmpty() {
+        if (calculateQuantityArray().length < 1){
+            return true;
+        }
+        return false;
+    }
+
+    /*
+    Name
+    Address1
+    Address2
+    City
+    State
+    Zipcode
+    Country
+    Email
+    PhoneNumber
+    ExtraInformation
+    ItemInformation
+    Item1	Quantity1
+    Item2	Quantity2
+    Item3	Quantity3
+    Item4	Quantity4
+    Item5	Quantity5
+    Item6	Quantity6
+    Item7	Quantity7
+    Item8	Quantity8
+    Item9	Quantity9
+    Item10	Quantity10
+     */
+
+    // todo: don't append the postcards for repeat customers
+    public String toShipBobString() {
+
+        String[] quantityArray = calculateQuantityArray();
+
+        String[] array = new String[]{
+                "\"" + name + "\"",
+                "\"" + street1 + "\"",
+                "\"" + street2 + "\"",
+                "\"" + city + "\"",
+                "\"" + state + "\"",
+                "\"" + zip + "\"",
+                "\"" + country + "\"",
+                "\"" + email + "\"",
+                "\"" + phoneNumber + "\"",
+
+                "\"" + "\"",
+                "\"" + email + "\"",
+
+                // Item 1
+                // Quantity 1 etc
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+        };
+
+        for(int i = 0; i < quantityArray.length; i++){
+            array[11+i] = quantityArray[i];
+        }
+
+        return StringUtils.join(array, ",");
+
+    }
+
+    private String[] calculateQuantityArray() {
+        List<String> quantityList = new ArrayList<String>();
+
+        if(silkCount > 0){
+            quantityList.add("\"silk\"");
+            quantityList.add(Integer.toString(silkCount));
+        }
+        if(silverCount > 0){
+            quantityList.add("\"silver\"");
+            quantityList.add(Integer.toString(silverCount));
+        }
+        if(goldCount > 0){
+            quantityList.add("\"gold\"");
+            quantityList.add(Integer.toString(goldCount));
+        }
+        if(bvCount > 0){
+            quantityList.add("\"bv-clearing-kit\"");
+            quantityList.add(Integer.toString(bvCount));
+        }
+        if(creamCount > 0){
+            quantityList.add("\"cream\"");
+            quantityList.add(Integer.toString(creamCount));
+        }
+        if(applicatorCount > 0){
+            quantityList.add("\"applicator\"");
+            quantityList.add(Integer.toString(applicatorCount));
+        }
+        if(assortedCount > 0){
+            quantityList.add("\"assorted\"");
+            quantityList.add(Integer.toString(assortedCount));
+        }
+
+        // we only have postcards in Chicago
+        if(silkCount + silverCount + goldCount + creamCount + assortedCount > 0) {
+            quantityList.add("\"NeuEve Postcard\"");
+            quantityList.add("1");
+
+            quantityList.add("\"Vuvatech Postcard\"");
+            quantityList.add("1");
+        }
+
+        return quantityList.toArray(new String[0]);
+    }
+
+    public void addRefund(String referenceTxnId) {
+        Map<String, Integer> shoppingCart = txnIdToItemIdAndQuantity.get(referenceTxnId);
+        if(shoppingCart != null){
+            for(Map.Entry<String, Integer> cartItem: shoppingCart.entrySet()){
+                String itemId = cartItem.getKey();
+                int itemQuantity = cartItem.getValue();
+
+                switch (itemId){
+                    case "silk":
+                        this.silkCount = Math.max(0, this.silkCount - itemQuantity);
+                        break;
+                    case "silver":
+                        this.silverCount = Math.max(0, this.silverCount - itemQuantity);
+                        break;
+                    case "gold":
+                        this.goldCount = Math.max(0, this.goldCount - itemQuantity);
+                        break;
+                    case "cream":
+                        this.creamCount = Math.max(0, this.creamCount - itemQuantity);
+                        break;
+                    case "bv-clearing-kit":
+                        this.bvCount = Math.max(0, this.bvCount - itemQuantity);
+                        break;
+                    case "assorted":
+                        this.assortedCount = Math.max(0, this.assortedCount - itemQuantity);
+                        break;
+                    case "applicator":
+                        this.applicatorCount = Math.max(0, this.applicatorCount - itemQuantity);
+                        break;
+                }
+            }
+            txnIdToItemIdAndQuantity.remove(referenceTxnId);
+        }
+    }
 }

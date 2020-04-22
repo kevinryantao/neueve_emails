@@ -37,11 +37,13 @@ public class PayPalDailyCSVParser {
                 customerRecord = new CustomerRecord(csvRecord.get("Name"),
                         from,
                         csvRecord.get("Shipping Address"),
-                        csvRecord.get("Address Line 1") + csvRecord.get("Address Line 2/District/Neighborhood"),
+                        csvRecord.get("Address Line 1"),
+                        csvRecord.get("Address Line 2/District/Neighborhood"),
                         csvRecord.get("Town/City"),
                         csvRecord.get("State/Province/Region/County/Territory/Prefecture/Republic"),
                         csvRecord.get("Zip/Postal Code"),
-                        csvRecord.get("Country"));
+                        csvRecord.get("Country"),
+                        csvRecord.get("Contact Phone Number"));
                 emailToCustomerRecordMap.put(from, customerRecord);
             }
             String[] monthDateYear = csvRecord.get(0).split("/");

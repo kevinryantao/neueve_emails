@@ -4,14 +4,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.joda.time.DateTime;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Scanner;
-import java.util.Set;
 
 // test comment
 
@@ -50,11 +45,13 @@ public class PayPalCSVParser {
                 customerRecord = new CustomerRecord(csvRecord.get("Name"),
                         from,
                         csvRecord.get("Shipping Address"),
-                        csvRecord.get("Address Line 1") + csvRecord.get("Address Line 2/District/Neighborhood"),
+                        csvRecord.get("Address Line 1"),
+                        csvRecord.get("Address Line 2/District/Neighborhood"),
                         csvRecord.get("Town/City"),
                         csvRecord.get("State/Province/Region/County/Territory/Prefecture/Republic"),
                         csvRecord.get("Zip/Postal Code"),
-                        csvRecord.get("Country"));
+                        csvRecord.get("Country"),
+                        csvRecord.get("Contact Phone Number"));
                 emailToCustomerRecordMap.put(from, customerRecord);
             }
             String[] monthDateYear = csvRecord.get(0).split("/");
