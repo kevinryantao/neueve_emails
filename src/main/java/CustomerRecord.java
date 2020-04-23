@@ -453,9 +453,9 @@ public class CustomerRecord {
         if(silkCount + silverCount + goldCount + creamCount + assortedCount > 0) {
             quantityList.add("\"NeuEve Postcard\"");
             quantityList.add("1");
-
-            quantityList.add("\"Vuvatech Postcard\"");
-            quantityList.add("1");
+//
+//            quantityList.add("\"Vuvatech Postcard\""); we ran out of these
+//            quantityList.add("1");
         }
 
         return quantityList.toArray(new String[0]);
