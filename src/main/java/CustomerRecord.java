@@ -378,11 +378,12 @@ public class CustomerRecord {
 
     // todo: don't append the postcards for repeat customers
     public String toShipBobString() {
+        System.out.println(firstName + " " + lastName);
 
         String[] quantityArray = calculateQuantityArray();
 
         String[] array = new String[]{
-                "\"" + name + "\"",
+                "\"" + firstName + " " + lastName + "\"",
                 "\"" + street1 + "\"",
                 "\"" + street2 + "\"",
                 "\"" + city + "\"",

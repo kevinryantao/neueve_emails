@@ -9,10 +9,12 @@ import org.joda.time.format.DateTimeFormatter;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /*
 * Inputs:
@@ -49,8 +51,6 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 *
 * todo: Create a list of all repeat customers
 * todo: Throw some kind of warning when it's the same customer but different address.
-* todo: Non ASCII characters like Acela Gómez
-* todo: pull name from Shipping Address
  *
 * */
 
@@ -74,10 +74,10 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download04-23-2020.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve04-23-2020.csv", "UTF-8");
+        File source = new File("Download05-18-2020.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve05-18-2020.csv", "UTF-8");
 
-        CSVParser parser = CSVParser.parse(source, US_ASCII, CSVFormat.EXCEL.withHeader());
+        CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
         System.out.println(parser.getHeaderMap());
         HashMap<String, CustomerRecord> emailToCustomerRecordMap = new HashMap<String, CustomerRecord>();
