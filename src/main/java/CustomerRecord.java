@@ -2,10 +2,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CustomerRecord {
 
@@ -346,7 +343,7 @@ public class CustomerRecord {
     }
 
     public boolean isEmpty() {
-        if (calculateQuantityArray().length < 1){
+        if (calculateQuantityArray(true).length < 1){
             return true;
         }
         return false;
@@ -380,7 +377,7 @@ public class CustomerRecord {
     public String toShipBobString() {
         System.out.println(firstName + " " + lastName);
 
-        String[] quantityArray = calculateQuantityArray();
+        String[] quantityArray = calculateQuantityArray(true);
 
         String[] array = new String[]{
                 "\"" + firstName + " " + lastName + "\"",
@@ -418,7 +415,51 @@ public class CustomerRecord {
 
     }
 
-    private String[] calculateQuantityArray() {
+    public String toShipBobString(Set<String> previousCustomers) {
+        System.out.println(firstName + " " + lastName);
+
+        boolean isNewCustomer = !previousCustomers.contains(email);
+
+        String[] quantityArray = calculateQuantityArray(isNewCustomer);
+
+        String[] array = new String[]{
+                "\"" + firstName + " " + lastName + "\"",
+                "\"" + street1 + "\"",
+                "\"" + street2 + "\"",
+                "\"" + city + "\"",
+                "\"" + state + "\"",
+                "\"" + zip + "\"",
+                "\"" + country + "\"",
+                "\"" + email + "\"",
+                "\"" + phoneNumber + "\"",
+
+                "\"" + "\"",
+                "\"" + email + "\"",
+
+                // Item 1
+                // Quantity 1 etc
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+                "","",
+        };
+
+        for(int i = 0; i < quantityArray.length; i++){
+            array[11+i] = quantityArray[i];
+        }
+
+        return StringUtils.join(array, ",");
+
+    }
+
+
+    private String[] calculateQuantityArray(boolean isNewCustomer) {
         List<String> quantityList = new ArrayList<String>();
 
         if(silkCount > 0){
@@ -451,7 +492,7 @@ public class CustomerRecord {
         }
 
         // we only have postcards in Chicago
-        if(silkCount + silverCount + goldCount + creamCount + assortedCount > 0) {
+        if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount > 0)) {
             quantityList.add("\"NeuEve Postcard\"");
             quantityList.add("1");
 //

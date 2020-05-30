@@ -10,8 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -20,6 +19,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 * Inputs:
 * File Named "LastUploadedRecord.txt" - Contains a datetime and name and email of person. Transaction ID?
 * File Named "DownloadXX-XX-XXXX.CSV" - Contains about 1 day's worth of payment data from PayPal.
+* File Named "AllPreviousCustomers.txt" - Contains about all emails of old customers.
 *
 * Outputs:
 * Overwrite file Named "LastUploadedRecord.txt" with new last person's datetime, name, email and TXN ID
@@ -49,8 +49,8 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 * 4. Add Vuvatech postcard + NeuEve Postcard to non-BV Clearing Kit.
 * 5. Customer Record toShipBob() returns a CSV String.
 *
-* todo: Create a list of all repeat customers
 * todo: Throw some kind of warning when it's the same customer but different address.
+* todo: Skip when PayPal data is incomplete
  *
 * */
 
@@ -60,6 +60,13 @@ public class PayPalDailyCSVParserToShipBob {
     private static final DateTimeFormatter PAYPAL_DATETIME_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss zzz");
 
     public static void main(String[] args) throws Exception {
+
+        Scanner allPreviousCustomers = new Scanner(new File("AllPreviousCustomers.txt"));
+        Set<String> prevCustomers = new HashSet<String>();
+        while(allPreviousCustomers.hasNextLine()){
+            prevCustomers.add(allPreviousCustomers.nextLine().toLowerCase());
+        }
+        allPreviousCustomers.close();
 
         System.out.println(DateTime.now());
 
@@ -74,8 +81,8 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download05-18-2020.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve05-18-2020.csv", "UTF-8");
+        File source = new File("Download05-30-2020.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve05-30-2020.csv", "UTF-8");
 
         CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
@@ -191,9 +198,22 @@ public class PayPalDailyCSVParserToShipBob {
     Item10	Quantity10
      */
 
+            int totalCustomers = 0;
+            int newCustomers = 0;
+            int returnCustomers = 0;
+
         for(CustomerRecord customerRecord : emailToCustomerRecordMap.values()){
             if (!customerRecord.isEmpty()){
-                writer.println(customerRecord.toShipBobString());
+                writer.println(customerRecord.toShipBobString(prevCustomers));
+
+                totalCustomers++;
+                if(prevCustomers.contains(customerRecord.email)){
+                    returnCustomers++;
+                } else {
+                    newCustomers++;
+                }
+
+                prevCustomers.add(customerRecord.email);
             }
         }
 
@@ -202,8 +222,60 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(DateTime.now());
 
+        System.out.println("---");
+        System.out.println("Total Customers : " + totalCustomers);
+        System.out.println("New Customers : " + newCustomers);
+        System.out.println("Return Customers : " + returnCustomers);
+
+        int subscriberCount = getSubscribers(emailToCustomerRecordMap.values());
+        System.out.println("Subscriber Orders : " + subscriberCount);
+        System.out.println("A la carte Orders : " + (totalCustomers - subscriberCount));
+        System.out.println("---");
+
+        Map<String, Integer> orderCounts = orderCounts(emailToCustomerRecordMap.values());
+        for(String sku: orderCounts.keySet()){
+            System.out.println(sku + " : " + orderCounts.get(sku));
+        }
+
         PrintWriter datewriter = new PrintWriter("LastUploadedRecord.txt");
         datewriter.println(newLastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
         datewriter.close();
+
+        PrintWriter emailwriter = new PrintWriter("AllPreviousCustomers.txt");
+        for(String email: prevCustomers){
+            emailwriter.println(email);
+        }
+        emailwriter.close();
+    }
+
+    private static int getSubscribers(Collection<CustomerRecord> customerRecords){
+        int subscribers = 0;
+        for(CustomerRecord customerRecord: customerRecords){
+            if(customerRecord.isSubscriber){
+                subscribers++;
+            }
+        }
+        return subscribers;
+    }
+
+    private static Map<String, Integer> orderCounts(Collection<CustomerRecord> customerRecords){
+        Map<String, Integer> skusList = new TreeMap<String, Integer>();
+        skusList.put("silk",0);
+        skusList.put("silver",0);
+        skusList.put("gold",0);
+        skusList.put("cream",0);
+        skusList.put("applicator",0);
+        skusList.put("assorted",0);
+        skusList.put("bv-clearing-kit",0);
+        for(CustomerRecord customerRecord: customerRecords) {
+            skusList.put("silk", skusList.get("silk") + customerRecord.silkCount);
+            skusList.put("silver", skusList.get("silver") + customerRecord.silverCount);
+            skusList.put("gold", skusList.get("gold") + customerRecord.goldCount);
+            skusList.put("cream", skusList.get("cream") + customerRecord.creamCount);
+            skusList.put("applicator", skusList.get("applicator") + customerRecord.applicatorCount);
+            skusList.put("assorted", skusList.get("assorted") + customerRecord.assortedCount);
+            skusList.put("bv-clearing-kit", skusList.get("bv-clearing-kit") + customerRecord.bvCount);
+        }
+        return skusList;
     }
 }
