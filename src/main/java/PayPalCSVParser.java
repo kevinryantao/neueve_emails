@@ -19,14 +19,14 @@ public class PayPalCSVParser {
 
     public static void main(String[] args) throws IOException {
 
-        File source = new File("Jan172020toApril1.CSV");
+        File source = new File("DownloadYearTo7-19-2020.CSV");
 
         CSVParser parser = CSVParser.parse(source, US_ASCII, CSVFormat.EXCEL.withHeader());
 
         System.out.println(parser.getHeaderMap());
         HashMap<String, CustomerRecord> emailToCustomerRecordMap = new HashMap<String, CustomerRecord>();
 
-        PrintWriter writer = new PrintWriter("CustomerDataCleanApr2_2020.csv", "UTF-8");
+        PrintWriter writer = new PrintWriter("NeuEveCustomerSummaryJuly19_2020.csv", "UTF-8");
 
         for (CSVRecord csvRecord : parser) {
             String from = csvRecord.get("From Email Address").toLowerCase();
@@ -40,6 +40,11 @@ public class PayPalCSVParser {
                     type.equals("General Payment")) {
                 continue;
             }
+
+            if (!"Subscription Payment".equals(type) && !"Website Payment".equals(type) && !"Shopping Cart Item".equals(type) && !"eBay Auction Payment".equals(type)){
+                continue;
+            }
+
             CustomerRecord customerRecord = emailToCustomerRecordMap.get(from);
             if (customerRecord == null) {
                 customerRecord = new CustomerRecord(csvRecord.get("Name"),
@@ -79,7 +84,7 @@ public class PayPalCSVParser {
                 "Street,Zip,City,State,Country," +
                 "Checkout Count,Cart Item Count,Is Subscriber,Subscribe Start Date," +
                 "Silk Count,Silver Count,Gold Count,BV Count,Cream Count,Applicator Count,Assorted Count,Last Txn Id," +
-                "First Purchase Date,Last Purchase Date");
+                "First Purchase Date,Last Purchase Date,Phone");
 
         for(CustomerRecord customerRecord : emailToCustomerRecordMap.values()){
             writer.println(customerRecord);

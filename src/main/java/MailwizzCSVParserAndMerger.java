@@ -142,7 +142,7 @@ public class MailwizzCSVParserAndMerger {
                 "Street,Zip,City,State,Country," +
                 "Checkout Count,Cart Item Count,Is Subscriber,Subscribe Start Date," +
                 "Silk Count,Silver Count,Gold Count,BV Count,Cream Count,Applicator Count,Assorted Count,Last Txn Id," +
-                "First Purchase Date,Last Purchase Date");
+                "First Purchase Date,Last Purchase Date,Phone");
 
         for(CustomerRecord customerRecord : updatedEmailToCustomerRecordMap.values()){
             writer.println(customerRecord);

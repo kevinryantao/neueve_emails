@@ -336,7 +336,9 @@ public class CustomerRecord {
                 lastTransactionId,
 
                 firstPurchase.toLocalDate().toString(),
-                lastPurchase.toLocalDate().toString()};
+                lastPurchase.toLocalDate().toString(),
+                "\"" + phoneNumber + "\""
+        };
 
         return StringUtils.join(array, ",");
 
