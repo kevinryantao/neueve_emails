@@ -495,8 +495,10 @@ public class CustomerRecord {
 
         // we only have postcards in Chicago
         if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount > 0)) {
-            quantityList.add("\"NeuEve Postcard\"");
-            quantityList.add("1");
+//            quantityList.add("\"NeuEve Postcard\""); we ran out of NeuEve Postcards
+//            quantityList.add("1");
+
+
 //
 //            quantityList.add("\"Vuvatech Postcard\""); we ran out of these
 //            quantityList.add("1");
