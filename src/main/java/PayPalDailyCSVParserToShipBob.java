@@ -51,6 +51,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 *
 * todo: Throw some kind of warning when it's the same customer but different address.
 * todo: Skip when PayPal data is incomplete
+* todo: Mark when a Canada order is a subscription at 49.95
  *
 * */
 
@@ -81,8 +82,8 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download09-17-2020.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve09-17-2020.csv", "UTF-8");
+        File source = new File("Download10-21-2020.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve10-21-2020.csv", "UTF-8");
 
         CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
