@@ -190,8 +190,9 @@ public class CustomerRecord {
         }
     }
 
+    // 10/21/2020 It's possible for the "itemId" to be blank sometimes. We need to catch this case
     private String starsEdited(String itemTitle, String itemId) {
-        if(!itemTitle.contains("*")){
+        if(!itemTitle.contains("*") && !itemId.isEmpty()){
             return itemId;
         }
         if(itemTitle.contains("clear") || itemTitle.contains("clear")){
