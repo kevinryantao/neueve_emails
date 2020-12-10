@@ -333,6 +333,63 @@ class CustomerRecordTest {
     }
 
 
+    @org.junit.jupiter.api.Test
+    void addPurchaseBVAll() {
+        CustomerRecord customerRecord = createCustomerRecord();
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve BV Clear",
+                "bv-clearing-kit x 4",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(4, customerRecord.bvCount);
+        assertEquals(4, customerRecord.cartItemCount);
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Silver",
+                "bv-clearing-kit x 3",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(7, customerRecord.bvCount);
+
+        assertEquals(7, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Gold",
+                "bv-clearing-kit x 2",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(9, customerRecord.bvCount);
+
+        assertEquals(9, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Cream",
+                "bv-clearing-kit",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(10, customerRecord.bvCount);
+        assertEquals(10, customerRecord.cartItemCount);
+
+
+    }
+
+
     // There's no way to do a refund based on the Transaction ID here. Need to do some other path. Or keep a record here.
     // I think we should keep a record here.
     @org.junit.jupiter.api.Test

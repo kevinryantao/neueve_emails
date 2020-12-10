@@ -259,6 +259,14 @@ public class CustomerRecord {
             this.goldCount += 4 * realQuantity;
             realItemId = "gold";
         }
+        if(itemId.equals("bv-clearing-kit x 2")){
+            this.bvCount += 2 * realQuantity;
+            realItemId = "bv-clearing-kit";
+        }
+        if(itemId.equals("bv-clearing-kit x 3")){
+            this.bvCount += 3 * realQuantity;
+            realItemId = "bv-clearing-kit";
+        }
         if(itemId.equals("bv-clearing-kit x 4")){
             this.bvCount += 4 * realQuantity;
             realItemId = "bv-clearing-kit";
@@ -271,6 +279,12 @@ public class CustomerRecord {
         if(itemId.contains("x 4")){
             this.cartItemCount += 4 * realQuantity;
             shoppingCart.put(realItemId, 4 * realQuantity);
+        } else if(itemId.contains("x 3")){
+            this.cartItemCount += 3 * realQuantity;
+            shoppingCart.put(realItemId, 3 * realQuantity);
+        } else if(itemId.contains("x 2")){
+            this.cartItemCount += 2 * realQuantity;
+            shoppingCart.put(realItemId, 2 * realQuantity);
         } else {
             this.cartItemCount += realQuantity;
             shoppingCart.put(realItemId, realQuantity);
