@@ -390,6 +390,73 @@ class CustomerRecordTest {
     }
 
 
+    @org.junit.jupiter.api.Test
+    void addPurchaseSBAll() {
+        CustomerRecord customerRecord = createCustomerRecord();
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve BV Clear",
+                "sea_buckthorn_60 x 4",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(4, customerRecord.seaBuckthorn60Count);
+        assertEquals(4, customerRecord.cartItemCount);
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Silver",
+                "sea_buckthorn_60 x 3",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(7, customerRecord.seaBuckthorn60Count);
+
+        assertEquals(7, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Gold",
+                "sea_buckthorn_60 x 2",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(9, customerRecord.seaBuckthorn60Count);
+
+        assertEquals(9, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Cream",
+                "sea_buckthorn_60",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(10, customerRecord.seaBuckthorn60Count);
+        assertEquals(10, customerRecord.cartItemCount);
+
+        customerRecord.addPurchase(49,
+                "Subscription Payment",
+                new DateTime(),
+                "NeuEve Subscription",
+                "sea_buckthorn_60",
+                1,
+                "2DU135542F264444W2");
+
+        assertEquals(11, customerRecord.seaBuckthorn60Count);
+        assertEquals(11, customerRecord.cartItemCount);
+
+    }
+
+
     // There's no way to do a refund based on the Transaction ID here. Need to do some other path. Or keep a record here.
     // I think we should keep a record here.
     @org.junit.jupiter.api.Test
@@ -468,6 +535,20 @@ class CustomerRecordTest {
         customerRecord.addRefund("ABCDEFG");
 
         assertEquals(0, customerRecord.bvCount);
+
+        customerRecord.addPurchase(49,
+                "Subscription Payment",
+                new DateTime(),
+                "NeuEve Subscription",
+                "sea_buckthorn_60",
+                1,
+                "SEA");
+
+        assertEquals(1, customerRecord.seaBuckthorn60Count);
+
+        customerRecord.addRefund("SEA");
+
+        assertEquals(0, customerRecord.seaBuckthorn60Count);
     }
 
 
@@ -508,7 +589,7 @@ class CustomerRecordTest {
                 1,
                 "1C382714DR0693311");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,\"NeuEve Postcard\",1,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,,,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString(prevCustomers));
 
     }
@@ -527,7 +608,7 @@ class CustomerRecordTest {
                 1,
                 "2DU135542F264444W");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"NeuEve Postcard\",1,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,,,,,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
         customerRecord.addPurchase(49,
@@ -538,7 +619,7 @@ class CustomerRecordTest {
                 1,
                 "1C382714DR0693311");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,\"NeuEve Postcard\",1,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,,,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
     }
@@ -568,6 +649,35 @@ class CustomerRecordTest {
                 "1C382714DR0693311");
 
         assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"bv-clearing-kit\",1,\"applicator\",1,,,,,,,,,,,,,,,,",
+                customerRecord.toShipBobString());
+
+    }
+
+    @org.junit.jupiter.api.Test
+    void toShipBobStringSB() {
+
+        CustomerRecord customerRecord = createCustomerRecord();
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "NeuEve BV Clear",
+                "sea_buckthorn_60",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"sea_buckthorn_60\",1,,,,,,,,,,,,,,,,,,",
+                customerRecord.toShipBobString());
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "Suppository Applicator, Reusable",
+                "applicator",
+                1,
+                "1C382714DR0693311");
+
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"applicator\",1,\"sea_buckthorn_60\",1,,,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
     }

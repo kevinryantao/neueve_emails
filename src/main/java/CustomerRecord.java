@@ -42,6 +42,7 @@ public class CustomerRecord {
     int creamCount;
     int applicatorCount;
     int assortedCount;
+    int seaBuckthorn60Count;
 
     String lastTransactionId;
 
@@ -271,6 +272,24 @@ public class CustomerRecord {
             this.bvCount += 4 * realQuantity;
             realItemId = "bv-clearing-kit";
         }
+
+        if(itemId.equals("sea_buckthorn_60")){
+            this.seaBuckthorn60Count += realQuantity;
+        }
+        if(itemId.equals("sea_buckthorn_60 x 2")){
+            this.seaBuckthorn60Count += 2 * realQuantity;
+            realItemId = "sea_buckthorn_60";
+        }
+        if(itemId.equals("sea_buckthorn_60 x 3")){
+            this.seaBuckthorn60Count += 3 * realQuantity;
+            realItemId = "sea_buckthorn_60";
+        }
+        if(itemId.equals("sea_buckthorn_60 x 4")){
+            this.seaBuckthorn60Count += 4 * realQuantity;
+            realItemId = "sea_buckthorn_60";
+        }
+
+
         if(itemId.equals("cream x 4")){
             this.creamCount += 4 * realQuantity;
             realItemId = "cream";
@@ -312,6 +331,7 @@ public class CustomerRecord {
         this.creamCount += otherCustomerRecord.creamCount;
         this.applicatorCount += otherCustomerRecord.applicatorCount;
         this.assortedCount += otherCustomerRecord.assortedCount;
+        this.seaBuckthorn60Count += otherCustomerRecord.seaBuckthorn60Count;
 
         this.lastTransactionId = otherCustomerRecord.lastTransactionId;
         this.lastPurchase = otherCustomerRecord.lastPurchase;
@@ -507,6 +527,10 @@ public class CustomerRecord {
             quantityList.add("\"assorted\"");
             quantityList.add(Integer.toString(assortedCount));
         }
+        if(seaBuckthorn60Count > 0){
+            quantityList.add("\"sea_buckthorn_60\"");
+            quantityList.add(Integer.toString(seaBuckthorn60Count));
+        }
 
         // we only have postcards in Chicago
         if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount > 0)) {
@@ -514,9 +538,9 @@ public class CustomerRecord {
 //            quantityList.add("1");
 
 
-//
-//            quantityList.add("\"Vuvatech Postcard\""); we ran out of these
-//            quantityList.add("1");
+
+            quantityList.add("\"Vuvatech Postcard\"");
+            quantityList.add("1");
         }
 
         return quantityList.toArray(new String[0]);
@@ -544,6 +568,9 @@ public class CustomerRecord {
                         break;
                     case "bv-clearing-kit":
                         this.bvCount = Math.max(0, this.bvCount - itemQuantity);
+                        break;
+                    case "sea_buckthorn_60":
+                        this.seaBuckthorn60Count = Math.max(0, this.seaBuckthorn60Count - itemQuantity);
                         break;
                     case "assorted":
                         this.assortedCount = Math.max(0, this.assortedCount - itemQuantity);

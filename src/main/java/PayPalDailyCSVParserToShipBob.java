@@ -82,8 +82,8 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download12-09-2020.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve12-09-2020.csv", "UTF-8");
+        File source = new File("Download02-18-2021.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve02-18-2021.csv", "UTF-8");
 
         CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
@@ -268,6 +268,7 @@ public class PayPalDailyCSVParserToShipBob {
         skusList.put("applicator",0);
         skusList.put("assorted",0);
         skusList.put("bv-clearing-kit",0);
+        skusList.put("sea_buckthorn_60", 0);
         for(CustomerRecord customerRecord: customerRecords) {
             skusList.put("silk", skusList.get("silk") + customerRecord.silkCount);
             skusList.put("silver", skusList.get("silver") + customerRecord.silverCount);
@@ -276,6 +277,7 @@ public class PayPalDailyCSVParserToShipBob {
             skusList.put("applicator", skusList.get("applicator") + customerRecord.applicatorCount);
             skusList.put("assorted", skusList.get("assorted") + customerRecord.assortedCount);
             skusList.put("bv-clearing-kit", skusList.get("bv-clearing-kit") + customerRecord.bvCount);
+            skusList.put("sea_buckthorn_60", skusList.get("sea_buckthorn_60") + customerRecord.seaBuckthorn60Count);
         }
         return skusList;
     }
