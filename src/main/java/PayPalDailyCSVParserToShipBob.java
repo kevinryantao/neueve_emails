@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.NumberFormat;
 import java.util.*;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
@@ -82,8 +83,8 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download02-18-2021.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve02-18-2021.csv", "UTF-8");
+        File source = new File("Download07-19-2021.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve07-19-2021.csv", "UTF-8");
 
         CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
@@ -152,8 +153,19 @@ public class PayPalDailyCSVParserToShipBob {
             if(quantity.isEmpty()){
                 quantity = "1";
             }
+
+            // If ItemTitle and ItemID are empty, we print a warning with the persons name
+            if(csvRecord.get("Item Title").isEmpty() && csvRecord.get("Item ID").isEmpty()){
+                System.out.println("*** WARNING ***");
+                System.out.println(csvRecord.get("Name") + " " + " has an empty item title and item ID");
+                System.out.println("*** WARNING ***");
+            }
+
+            NumberFormat nf = NumberFormat.getInstance(new Locale("en", "US"));
+            nf.parse(csvRecord.get("Gross")).doubleValue();
+
             customerRecord.addPurchase(
-                    Double.parseDouble(csvRecord.get("Gross")),
+                    nf.parse(csvRecord.get("Gross")).doubleValue(),
                     csvRecord.get("Type"),
                     new DateTime()
                             .withYear(Integer.parseInt(monthDateYear[2]))
@@ -218,6 +230,22 @@ public class PayPalDailyCSVParserToShipBob {
             }
         }
 
+        // add the empty customers at the end.
+        for(CustomerRecord customerRecord : emailToCustomerRecordMap.values()){
+            if (customerRecord.isEmpty()){
+                writer.println(customerRecord.toShipBobString(prevCustomers));
+
+                totalCustomers++;
+                if(prevCustomers.contains(customerRecord.email)){
+                    returnCustomers++;
+                } else {
+                    newCustomers++;
+                }
+
+                prevCustomers.add(customerRecord.email);
+            }
+        }
+
         writer.close();
 
 
@@ -268,6 +296,7 @@ public class PayPalDailyCSVParserToShipBob {
         skusList.put("applicator",0);
         skusList.put("assorted",0);
         skusList.put("bv-clearing-kit",0);
+        skusList.put("finisher",0);
         skusList.put("sea_buckthorn_60", 0);
         for(CustomerRecord customerRecord: customerRecords) {
             skusList.put("silk", skusList.get("silk") + customerRecord.silkCount);
@@ -277,6 +306,7 @@ public class PayPalDailyCSVParserToShipBob {
             skusList.put("applicator", skusList.get("applicator") + customerRecord.applicatorCount);
             skusList.put("assorted", skusList.get("assorted") + customerRecord.assortedCount);
             skusList.put("bv-clearing-kit", skusList.get("bv-clearing-kit") + customerRecord.bvCount);
+            skusList.put("finisher", skusList.get("finisher") + customerRecord.finisherCount);
             skusList.put("sea_buckthorn_60", skusList.get("sea_buckthorn_60") + customerRecord.seaBuckthorn60Count);
         }
         return skusList;

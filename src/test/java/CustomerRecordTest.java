@@ -389,6 +389,62 @@ class CustomerRecordTest {
 
     }
 
+    @org.junit.jupiter.api.Test
+    void addPurchaseFinisherAll() {
+        CustomerRecord customerRecord = createCustomerRecord();
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve BV Clear",
+                "finisher x 4",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(4, customerRecord.finisherCount);
+        assertEquals(4, customerRecord.cartItemCount);
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Silver",
+                "finisher x 3",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(7, customerRecord.finisherCount);
+
+        assertEquals(7, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Gold",
+                "finisher x 2",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(9, customerRecord.finisherCount);
+
+        assertEquals(9, customerRecord.cartItemCount);
+
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "4 x NeuEve Cream",
+                "finisher",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(10, customerRecord.finisherCount);
+        assertEquals(10, customerRecord.cartItemCount);
+
+
+    }
+
 
     @org.junit.jupiter.api.Test
     void addPurchaseSBAll() {
@@ -589,7 +645,7 @@ class CustomerRecordTest {
                 1,
                 "1C382714DR0693311");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,",
                 customerRecord.toShipBobString(prevCustomers));
 
     }
@@ -608,7 +664,7 @@ class CustomerRecordTest {
                 1,
                 "2DU135542F264444W");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,,,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
         customerRecord.addPurchase(49,
@@ -619,7 +675,7 @@ class CustomerRecordTest {
                 1,
                 "1C382714DR0693311");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"silver\",1,\"applicator\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
     }
@@ -654,6 +710,36 @@ class CustomerRecordTest {
     }
 
     @org.junit.jupiter.api.Test
+    void toShipBobStringFinisher() {
+
+        CustomerRecord customerRecord = createCustomerRecord();
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "NeuEve BV Clear",
+                "finisher",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"finisher\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,,,",
+                customerRecord.toShipBobString());
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "Suppository Applicator, Reusable",
+                "applicator",
+                1,
+                "1C382714DR0693311");
+
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"finisher\",1,\"applicator\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,",
+                customerRecord.toShipBobString());
+
+    }
+
+
+    @org.junit.jupiter.api.Test
     void toShipBobStringSB() {
 
         CustomerRecord customerRecord = createCustomerRecord();
@@ -666,7 +752,7 @@ class CustomerRecordTest {
                 1,
                 "2DU135542F264444W");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"sea_buckthorn_60\",1,,,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"sea_buckthorn_60\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
         customerRecord.addPurchase(49,
@@ -677,7 +763,7 @@ class CustomerRecordTest {
                 1,
                 "1C382714DR0693311");
 
-        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"applicator\",1,\"sea_buckthorn_60\",1,,,,,,,,,,,,,,,,",
+        assertEquals("\"Kevin Ryan Tao\",\"123 Fake Street\",\"Apt B\",\"Faketown\",\"AK\",\"12345\",\"USA\",\"kevin@fakemail.com\",\"1234566789\",\"\",\"kevin@fakemail.com\",\"applicator\",1,\"sea_buckthorn_60\",1,\"NeuEve Postcard\",1,\"Vuvatech Postcard\",1,,,,,,,,,,,,",
                 customerRecord.toShipBobString());
 
     }

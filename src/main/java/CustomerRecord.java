@@ -39,6 +39,7 @@ public class CustomerRecord {
     int silverCount;
     int goldCount;
     int bvCount;
+    int finisherCount;
     int creamCount;
     int applicatorCount;
     int assortedCount;
@@ -245,9 +246,6 @@ public class CustomerRecord {
         if(itemId.equals("applicator")){
             this.applicatorCount += realQuantity;
         }
-        if(itemId.equals("bv-clearing-kit")){
-            this.bvCount += realQuantity;
-        }
         if(itemId.equals("silk x 4")){
             this.silkCount += 4 * realQuantity;
             realItemId = "silk";
@@ -260,6 +258,10 @@ public class CustomerRecord {
             this.goldCount += 4 * realQuantity;
             realItemId = "gold";
         }
+
+        if(itemId.equals("bv-clearing-kit")){
+            this.bvCount += realQuantity;
+        }
         if(itemId.equals("bv-clearing-kit x 2")){
             this.bvCount += 2 * realQuantity;
             realItemId = "bv-clearing-kit";
@@ -271,6 +273,22 @@ public class CustomerRecord {
         if(itemId.equals("bv-clearing-kit x 4")){
             this.bvCount += 4 * realQuantity;
             realItemId = "bv-clearing-kit";
+        }
+
+        if(itemId.equals("finisher")){
+            this.finisherCount += realQuantity;
+        }
+        if(itemId.equals("finisher x 2")){
+            this.finisherCount += 2 * realQuantity;
+            realItemId = "finisher";
+        }
+        if(itemId.equals("finisher x 3")){
+            this.finisherCount += 3 * realQuantity;
+            realItemId = "finisher";
+        }
+        if(itemId.equals("finisher x 4")){
+            this.finisherCount += 4 * realQuantity;
+            realItemId = "finisher";
         }
 
         if(itemId.equals("sea_buckthorn_60")){
@@ -328,6 +346,7 @@ public class CustomerRecord {
         this.silverCount += otherCustomerRecord.silverCount;
         this.goldCount += otherCustomerRecord.goldCount;
         this.bvCount += otherCustomerRecord.bvCount;
+        this.finisherCount += otherCustomerRecord.finisherCount;
         this.creamCount += otherCustomerRecord.creamCount;
         this.applicatorCount += otherCustomerRecord.applicatorCount;
         this.assortedCount += otherCustomerRecord.assortedCount;
@@ -337,6 +356,7 @@ public class CustomerRecord {
         this.lastPurchase = otherCustomerRecord.lastPurchase;
     }
 
+    // What uses this? todo: this is missing sea buckthorn and finisher
     public String toString() {
 
         int subscriber = isSubscriber ? 1 : 0;
@@ -515,6 +535,11 @@ public class CustomerRecord {
             quantityList.add("\"bv-clearing-kit\"");
             quantityList.add(Integer.toString(bvCount));
         }
+        if(finisherCount > 0){
+            quantityList.add("\"finisher\"");
+            quantityList.add(Integer.toString(finisherCount));
+        }
+
         if(creamCount > 0){
             quantityList.add("\"cream\"");
             quantityList.add(Integer.toString(creamCount));
@@ -533,9 +558,9 @@ public class CustomerRecord {
         }
 
         // we only have postcards in Chicago
-        if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount > 0)) {
-//            quantityList.add("\"NeuEve Postcard\""); we ran out of NeuEve Postcards
-//            quantityList.add("1");
+        if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount + finisherCount + seaBuckthorn60Count> 0)) {
+            quantityList.add("\"NeuEve Postcard\"");
+            quantityList.add("1");
 
 
 
@@ -568,6 +593,9 @@ public class CustomerRecord {
                         break;
                     case "bv-clearing-kit":
                         this.bvCount = Math.max(0, this.bvCount - itemQuantity);
+                        break;
+                    case "finisher":
+                        this.finisherCount = Math.max(0, this.finisherCount - itemQuantity);
                         break;
                     case "sea_buckthorn_60":
                         this.seaBuckthorn60Count = Math.max(0, this.seaBuckthorn60Count - itemQuantity);
