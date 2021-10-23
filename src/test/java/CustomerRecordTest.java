@@ -710,6 +710,27 @@ class CustomerRecordTest {
     }
 
     @org.junit.jupiter.api.Test
+    void isEmpty() {
+
+        CustomerRecord customerRecord = createCustomerRecord();
+
+        customerRecord.addPurchase(49,
+                "Shopping Cart Item",
+                new DateTime(),
+                "NeuEve BV Clear",
+                "finisher",
+                1,
+                "2DU135542F264444W");
+
+        assertEquals(1, customerRecord.finisherCount);
+
+        customerRecord.addRefund("2DU135542F264444W");
+
+        assertTrue(customerRecord.isEmpty());
+
+    }
+
+    @org.junit.jupiter.api.Test
     void toShipBobStringFinisher() {
 
         CustomerRecord customerRecord = createCustomerRecord();

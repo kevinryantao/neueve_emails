@@ -83,8 +83,8 @@ public class PayPalDailyCSVParserToShipBob {
 
         System.out.println(lastUploadedDateTime.toString(PAYPAL_DATETIME_FORMAT));
 
-        File source = new File("Download07-19-2021.CSV");
-        PrintWriter writer = new PrintWriter("NeuEve07-19-2021.csv", "UTF-8");
+        File source = new File("Download10-23-2021.CSV");
+        PrintWriter writer = new PrintWriter("NeuEve10-23-2021.csv", "UTF-8");
 
         CSVParser parser = CSVParser.parse(source, UTF_8, CSVFormat.EXCEL.withHeader());
 
@@ -230,21 +230,21 @@ public class PayPalDailyCSVParserToShipBob {
             }
         }
 
-        // add the empty customers at the end.
-        for(CustomerRecord customerRecord : emailToCustomerRecordMap.values()){
-            if (customerRecord.isEmpty()){
-                writer.println(customerRecord.toShipBobString(prevCustomers));
-
-                totalCustomers++;
-                if(prevCustomers.contains(customerRecord.email)){
-                    returnCustomers++;
-                } else {
-                    newCustomers++;
-                }
-
-                prevCustomers.add(customerRecord.email);
-            }
-        }
+        // add the empty customers at the end. EDIT disable this because PayPal is no longer giving us empty data
+//        for(CustomerRecord customerRecord : emailToCustomerRecordMap.values()){
+//            if (customerRecord.isEmpty()){
+//                writer.println(customerRecord.toShipBobString(prevCustomers));
+//
+//                totalCustomers++;
+//                if(prevCustomers.contains(customerRecord.email)){
+//                    returnCustomers++;
+//                } else {
+//                    newCustomers++;
+//                }
+//
+//                prevCustomers.add(customerRecord.email);
+//            }
+//        }
 
         writer.close();
 

@@ -400,7 +400,7 @@ public class CustomerRecord {
     }
 
     public boolean isEmpty() {
-        if (calculateQuantityArray(true).length < 1){
+        if (calculateQuantityArray(false).length < 1){
             return true;
         }
         return false;
@@ -558,11 +558,9 @@ public class CustomerRecord {
         }
 
         // we only have postcards in Chicago
-        if(isNewCustomer && (silkCount + silverCount + goldCount + creamCount + assortedCount + finisherCount + seaBuckthorn60Count> 0)) {
+        if(isNewCustomer) {
             quantityList.add("\"NeuEve Postcard\"");
             quantityList.add("1");
-
-
 
             quantityList.add("\"Vuvatech Postcard\"");
             quantityList.add("1");
